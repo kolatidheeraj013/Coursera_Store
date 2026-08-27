@@ -30,3 +30,5 @@ upload=gr.Interface(
 app = gr.TabbedInterface([demo, upload], ["Text", "Upload"])
 
 app.launch()
+
+

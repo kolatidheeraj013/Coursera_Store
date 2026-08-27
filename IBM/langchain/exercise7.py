@@ -134,10 +134,9 @@ for question in test_questions:
     print("Question:", question)
 
     result = agent_executor.invoke(
-        {
-            "input": question
-        }
-    )
+        {"input": question})
 
     print("\nFinal Answer:")
     print(result["output"])
+
+
