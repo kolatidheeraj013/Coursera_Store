@@ -8852,10 +8852,17 @@ typeof navigator === "object" && (function (global, factory) {
     if (hasRequiredUrlPolyfill) return urlPolyfill;
     hasRequiredUrlPolyfill = 1;
     (function (global) {
+<<<<<<< Updated upstream
       /**
        * Polyfill URLSearchParams
        *
        * Inspired from : https://github.com/WebReflection/url-search-params/blob/master/src/url-search-params.js
+=======
+      /**
+       * Polyfill URLSearchParams
+       *
+       * Inspired from : https://github.com/WebReflection/url-search-params/blob/master/src/url-search-params.js
+>>>>>>> Stashed changes
        */
 
       var checkIfIteratorIsSupported = function () {
@@ -8884,9 +8891,15 @@ typeof navigator === "object" && (function (global, factory) {
         return iterator;
       };
 
+<<<<<<< Updated upstream
       /**
        * Search param name and values should be encoded according to https://url.spec.whatwg.org/#urlencoded-serializing
        * encodeURIComponent() produces the same result except encoding spaces as `%20` instead of `+`.
+=======
+      /**
+       * Search param name and values should be encoded according to https://url.spec.whatwg.org/#urlencoded-serializing
+       * encodeURIComponent() produces the same result except encoding spaces as `%20` instead of `+`.
+>>>>>>> Stashed changes
        */
       var serializeParam = function (value) {
         return encodeURIComponent(value).replace(/%20/g, '+');
@@ -9074,10 +9087,17 @@ typeof navigator === "object" && (function (global, factory) {
       // HTMLAnchorElement
     })(typeof commonjsGlobal !== 'undefined' ? commonjsGlobal : typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : urlPolyfill);
     (function (global) {
+<<<<<<< Updated upstream
       /**
        * Polyfill URL
        *
        * Inspired from : https://github.com/arv/DOM-URL-Polyfill/blob/master/src/url.js
+=======
+      /**
+       * Polyfill URL
+       *
+       * Inspired from : https://github.com/arv/DOM-URL-Polyfill/blob/master/src/url.js
+>>>>>>> Stashed changes
        */
 
       var checkIfURLIsSupported = function () {

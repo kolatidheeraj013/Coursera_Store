@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /*
  * Editor.md
  *
@@ -10,6 +11,20 @@
  * @updateTime  2023-06-16
  */
 
+=======
+/*
+ * Editor.md
+ *
+ * @file        editormd.js 
+ * @version     v1.0.2 
+ * @description Open source online markdown editor.
+ * @license     MIT License
+ * @author      IBM Skills Network
+ * {@link       https://github.com/ibm-skills-network/markdown-editor}
+ * @updateTime  2023-06-16
+ */
+
+>>>>>>> Stashed changes
 ;(function(factory) {
     "use strict";
 
