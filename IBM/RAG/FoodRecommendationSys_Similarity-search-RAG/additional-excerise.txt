@@ -1,0 +1,395 @@
+
+
+
+Practice Exercises
+Now that you have built and tested all three food search systems, complete these practice exercises to deepen your understanding and extend the functionality.
+
+###Exercise 1: Enhance the Interactive Search System
+Modify the interactive_search.py file to add search history tracking. In essence, you want to keep track of user's previous searches and allow them to view history with a "history" command.
+
+Hint: Add a global variable to store the history, and create new command handlers.
+
+python
+
+  # Add a global variable, initialized to an empty list, at the top of interactive_search.py
+search_history = []
+
+# Modify the main function to include:
+global search_history
+
+# Add these functions to interactive_search.py
+def handle_history_command():
+    """Display user's search history"""
+    if not search_history:
+        print("📝 No search history available")
+        return
+    
+    print("\n📝 Your Search History:")
+    print("-" * 30)
+    for i, search in enumerate(search_history[-10:], 1):  # Show last 10
+        print(f"{i}. {search}")
+
+# Modify the interactive_food_chatbot function to include:
+elif user_input.lower() in ['history']:
+    handle_history_command()
+
+# In handle_food_search function, add:
+search_history.append(query)
+python
+
+from shared_functions import *
+
+# Global variable to store loaded food items
+food_items = []
+search_history = []
+
+def main():
+    """Main function for interactive CLI food recommendation system"""
+    try:
+        print("🍽️  Interactive Food Recommendation System")
+        print("=" * 50)
+        print("Loading food database...")
+        
+        # Load food data from file
+        global food_items
+        global search_history
+        food_items = load_food_data('./FoodDataSet.json')
+        print(f"✅ Loaded {len(food_items)} food items successfully")
+        
+        # Create and populate search collection
+        collection = create_similarity_search_collection(
+            "interactive_food_search",
+            {'description': 'A collection for interactive food search'}
+        )
+        populate_similarity_collection(collection, food_items)
+        
+        # Start interactive chatbot
+        interactive_food_chatbot(collection)
+        
+    except Exception as error:
+        print(f"❌ Error initializing system: {error}")
+
+def interactive_food_chatbot(collection):
+    """Interactive CLI chatbot for food recommendations"""
+    print("\n" + "="*50)
+    print("🤖 INTERACTIVE FOOD SEARCH CHATBOT")
+    print("="*50)
+    print("Commands:")
+    print("  • Type any food name or description to search")
+    print("  • 'help' - Show available commands")
+    print("  • 'quit' or 'exit' - Exit the system")
+    print("  • Ctrl+C - Emergency exit")
+    print("-" * 50)
+    
+    while True:
+        try:
+            # Get user input
+            user_input = input("\n🔍 Search for food: ").strip()
+            
+            # Handle empty input
+            if not user_input:
+                print("   Please enter a search term or 'help' for commands")
+                continue
+            
+            # Handle exit commands
+            if user_input.lower() in ['quit', 'exit', 'q']:
+                print("\n👋 Thank you for using the Food Recommendation System!")
+                print("   Goodbye!")
+                break
+            
+            # Handle help command
+            elif user_input.lower() in ['help', 'h']:
+                show_help_menu()
+            
+            elif user_input.lower() in ['history']:
+                handle_history_command()
+            
+            # Handle food search
+            else:
+                handle_food_search(collection, user_input)
+                
+        except KeyboardInterrupt:
+            print("\n\n👋 System interrupted. Goodbye!")
+            break
+        except Exception as e:
+            print(f"❌ Error processing request: {e}")
+
+def show_help_menu():
+    """Display help information for users"""
+    print("\n📖 HELP MENU")
+    print("-" * 30)
+    print("Search Examples:")
+    print("  • 'chocolate dessert' - Find chocolate desserts")
+    print("  • 'Italian food' - Find Italian cuisine")
+    print("  • 'sweet treats' - Find sweet desserts")
+    print("  • 'baked goods' - Find baked items")
+    print("  • 'low calorie' - Find lower-calorie options")
+    print("\nCommands:")
+    print("  • 'help' - Show this help menu")
+    print("  • 'quit' - Exit the system")
+
+def handle_food_search(collection, query):
+    """Handle food similarity search with enhanced display"""
+    search_history.append(query)
+    print(f"\n🔍 Searching for '{query}'...")
+    print("   Please wait...")
+    
+    # Perform similarity search
+    results = perform_similarity_search(collection, query, 5)
+    
+    if not results:
+        print("❌ No matching foods found.")
+        print("💡 Try different keywords like:")
+        print("   • Cuisine types: 'Italian', 'Thai', 'Mexican'")
+        print("   • Ingredients: 'chicken', 'vegetables', 'cheese'")
+        print("   • Descriptors: 'spicy', 'sweet', 'healthy'")
+        return
+    
+    # Display results with rich formatting
+    print(f"\n✅ Found {len(results)} recommendations:")
+    print("=" * 60)
+    
+    for i, result in enumerate(results, 1):
+        # Calculate percentage score
+        percentage_score = result['similarity_score'] * 100
+        
+        print(f"\n{i}. 🍽️  {result['food_name']}")
+        print(f"   📊 Match Score: {percentage_score:.1f}%")
+        print(f"   🏷️  Cuisine: {result['cuisine_type']}")
+        print(f"   🔥 Calories: {result['food_calories_per_serving']} per serving")
+        print(f"   📝 Description: {result['food_description']}")
+        
+        # Add visual separator
+        if i < len(results):
+            print("   " + "-" * 50)
+    
+    print("=" * 60)
+    
+    # Provide suggestions for further exploration
+    suggest_related_searches(results)
+
+def suggest_related_searches(results):
+    """Suggest related searches based on current results"""
+    if not results:
+        return
+    
+    # Extract cuisine types from results
+    cuisines = list(set([r['cuisine_type'] for r in results]))
+    
+    print("\n💡 Related searches you might like:")
+    for cuisine in cuisines[:3]:  # Limit to 3 suggestions
+        print(f"   • Try '{cuisine} dishes' for more {cuisine} options")
+    
+    # Suggest calorie-based searches
+    avg_calories = sum([r['food_calories_per_serving'] for r in results]) / len(results)
+    if avg_calories > 350:
+        print("   • Try 'low calorie' for lighter options")
+    else:
+        print("   • Try 'hearty meal' for more substantial dishes")
+
+def handle_history_command():
+    """Display user's search history"""
+    if not search_history:
+        print("📝 No search history available")
+        return
+    
+    print("\n📝 Your Search History:")
+    print("-" * 30)
+    for i, search in enumerate(search_history[-10:], 1):  # Show last 10
+        print(f"{i}. {search}")
+
+if __name__ == "__main__":
+    main()
+
+###Exercise 2: Build a Food Calorie Checker
+Create an interactive tool in a new file called calorie_checker.py that helps users find foods within their calorie budget:
+
+Ask user for their calorie budget - Get the maximum calories they want.
+
+Let them search for foods and show if they fit the budget - Use filtered search to check calorie limits.
+
+Goal: Build a complete interactive program that repeatedly asks for searches and shows budget-friendly results.
+
+python
+
+# Create a file called calorie_checker.py
+from shared_functions import *
+
+def calorie_checker():
+    """Interactive calorie budget checker for foods"""
+    print("🔥 FOOD CALORIE BUDGET CHECKER")
+    print("=" * 35)
+    
+    # Setup data
+    food_items = load_food_data('FoodDataSet.json')
+    collection = create_similarity_search_collection("calorie_checker")
+    populate_similarity_collection(collection, food_items)
+    print("✅ Food database loaded!")
+    
+    # Get user's calorie budget
+    while True:
+        try:
+            budget = int(input("\n💪 What's your calorie budget per meal? "))
+            if budget > 0:
+                break
+            else:
+                print("Please enter a positive number!")
+        except ValueError:
+            print("Please enter a valid number!")
+    
+    print(f"\n🎯 Your calorie budget: {budget} calories")
+    print("Now search for foods to see if they fit your budget!")
+    
+    # Interactive search loop
+    while True:
+        print("\n" + "-" * 40)
+        search_term = input("🔍 Search for a food (or 'quit' to exit): ").strip()
+        
+        if search_term.lower() == 'quit':
+            print("👋 Thanks for using the Calorie Checker!")
+            break
+        
+        if not search_term:
+            print("Please enter a food to search for!")
+            continue
+        
+        # Search for foods within budget
+        budget_results = perform_filtered_similarity_search(
+            collection, search_term, max_calories=budget, n_results=5
+        )
+        
+        # Also get regular results to show what's over budget
+        all_results = perform_similarity_search(collection, search_term, 5)
+        
+        print(f"\n📋 Results for '{search_term}':")
+        
+        if budget_results:
+            print(f"✅ FITS YOUR BUDGET ({budget} cal limit):")
+            for i, result in enumerate(budget_results, 1):
+                calories = result['food_calories_per_serving']
+                remaining = budget - calories
+                print(f"  {i}. {result['food_name']}")
+                print(f"     Calories: {calories} (🟢 {remaining} cal remaining)")
+                print(f"     Cuisine: {result['cuisine_type']}")
+        else:
+            print(f"❌ No foods found within your {budget} calorie budget!")
+        
+        # Show over-budget options
+        over_budget = []
+        for result in all_results:
+            if result['food_calories_per_serving'] > budget:
+                over_budget.append(result)
+        
+        if over_budget:
+            print(f"\n🚫 OVER BUDGET (but similar to your search):")
+            for i, result in enumerate(over_budget[:3], 1):
+                calories = result['food_calories_per_serving']
+                excess = calories - budget
+                print(f"  {i}. {result['food_name']}")
+                print(f"     Calories: {calories} (🔴 {excess} cal over budget)")
+        
+        # Show budget summary
+        if budget_results:
+            avg_calories = sum(r['food_calories_per_serving'] for r in budget_results) / len(budget_results)
+            print(f"\n📊 Budget-friendly options average: {avg_calories:.0f} calories")
+
+if __name__ == "__main__":
+    calorie_checker()
+
+###Exercise 3: Query Different Result Counts
+Practice controlling similarity search results by varying the number of results returned in a new file called result_limiter.py:
+
+Test different result limits - Use the n_results parameter to get different amounts of results.
+
+Compare result quality - See how result quality changes with more or fewer results.
+
+Hint: Use the perform_similarity_search() function with different n_results values (1, 3, 5, 10).
+
+python
+
+# Create a file called result_limiter.py
+from shared_functions import *
+
+def test_result_limits():
+    """Test how different result limits affect search quality"""
+    print("📊 SIMILARITY SEARCH RESULT LIMITER")
+    print("=" * 45)
+    
+    # Setup
+    food_items = load_food_data('FoodDataSet.json')
+    collection = create_similarity_search_collection("result_test")
+    populate_similarity_collection(collection, food_items)
+    
+    # Test query
+    query = "spicy chicken"
+    print(f"🔍 Testing query: '{query}'\n")
+    
+    # Test different result limits
+    result_limits = [1, 3, 5, 10]
+    
+    for limit in result_limits:
+        print(f"📋 Getting top {limit} result(s):")
+        print("-" * 30)
+        
+        results = perform_similarity_search(collection, query, limit)
+        
+        if results:
+            for i, result in enumerate(results, 1):
+                score = result['similarity_score']
+                print(f"  {i}. {result['food_name']}")
+                print(f"     Score: {score:.3f}")
+                print(f"     Cuisine: {result['cuisine_type']}")
+                print(f"     Calories: {result['food_calories_per_serving']}")
+                print()
+            
+            # Show quality analysis
+            scores = [r['similarity_score'] for r in results]
+            avg_score = sum(scores) / len(scores)
+            print(f"  📈 Average score: {avg_score:.3f}")
+            print(f"  🎯 Best score: {max(scores):.3f}")
+            if len(scores) > 1:
+                print(f"  📉 Worst score: {min(scores):.3f}")
+        else:
+            print("  No results found!")
+        
+        print("=" * 45)
+    
+    # Interactive test with user input
+    print("\n🎮 INTERACTIVE MODE:")
+    print("Test your own queries with different result limits!")
+    
+    while True:
+        user_query = input("\nEnter search query (or press Enter to exit): ").strip()
+        if not user_query:
+            break
+        
+        try:
+            limit_input = input("How many results? (1-20): ").strip()
+            limit = int(limit_input) if limit_input.isdigit() and 1 <= int(limit_input) <= 20 else 5
+        except:
+            limit = 5
+        
+        print(f"\n🔍 Searching for '{user_query}' (limit: {limit})")
+        results = perform_similarity_search(collection, user_query, limit)
+        
+        if results:
+            print(f"Found {len(results)} results:")
+            for i, result in enumerate(results, 1):
+                print(f"  {i}. {result['food_name']} (Score: {result['similarity_score']:.3f})")
+            
+            # Show quality analysis
+            scores = [r['similarity_score'] for r in results]
+            avg_score = sum(scores) / len(scores)
+            print()
+            print(f"  📈 Average score: {avg_score:.3f}")
+            print(f"  🎯 Best score: {max(scores):.3f}")
+            if len(scores) > 1:
+                print(f"  📉 Worst score: {min(scores):.3f}")
+        else:
+            print("No results found!")
+    
+    print("\n👋 Thanks for testing result limits!")
+
+if __name__ == "__main__":
+    test_result_limits()
+
