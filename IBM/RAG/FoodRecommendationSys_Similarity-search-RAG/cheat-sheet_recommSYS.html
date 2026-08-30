@@ -1,0 +1,159 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAG Cheat Sheet</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #1f2937;
+      background: #f9fafb;
+    }
+    h1, h2, h3 {
+      color: #111827;
+      margin-top: 1.5em;
+    }
+    p, li {
+      font-size: 16px;
+    }
+    code, pre {
+      font-family: "Consolas", "Courier New", monospace;
+    }
+    pre {
+      background: #111827;
+      color: #f9fafb;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    code {
+      background: #e5e7eb;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+  </style>
+</head>
+<body>
+  <h1>RAG Overview</h1>
+
+  <p>Retrieval-Augmented Generation (RAG) improves language model responses by retrieving relevant external information before generating an answer. This helps reduce hallucinations and creates more grounded answers.</p>
+
+  <h2>What problem does RAG solve?</h2>
+  <ul>
+    <li>LLMs have limited context windows.</li>
+    <li>Knowledge is frozen at the point of training.</li>
+    <li>Models can generate incorrect or unsupported information.</li>
+  </ul>
+
+  <h2>RAG pipeline</h2>
+  <ol>
+    <li>Collect relevant source documents.</li>
+    <li>Split text into smaller chunks when needed.</li>
+    <li>Convert documents and chunks to embeddings.</li>
+    <li>Store embeddings in a vector database.</li>
+    <li>Receive the user prompt.</li>
+    <li>Embed the user prompt.</li>
+    <li>Retrieve the most relevant chunks.</li>
+    <li>Combine the retrieved context with the query.</li>
+    <li>Send the augmented prompt to the LLM.</li>
+  </ol>
+
+  <h2>Role of a vector database</h2>
+  <p>A vector database stores and retrieves embeddings. It supports fast semantic search and keeps retrieval consistent with the source documents.</p>
+
+  <h2>Common pitfalls</h2>
+  <ul>
+    <li>Using different embedding models for documents and queries.</li>
+    <li>Chunking documents poorly.</li>
+    <li>Forgetting to re-embed data after changing the model or distance metric.</li>
+    <li>Assuming retrieved content is always the best final answer.</li>
+  </ul>
+
+  <h1>ChromaDB</h1>
+  <p>ChromaDB is a vector database commonly used in RAG systems to store embeddings and search for relevant content.</p>
+
+  <h2>Create a collection</h2>
+  <pre><code>import chromadb
+from chromadb.utils import embedding_functions
+
+sentence_transformer_ef = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="all-MiniLM-L6-v2"
+)
+
+client = chromadb.Client()
+
+collection = client.create_collection(
+    name="food_collection",
+    metadata={"description": "Food dataset"},
+    embedding_function=sentence_transformer_ef
+)</code></pre>
+
+  <h2>Connect to an existing collection</h2>
+  <pre><code>collection = client.get_collection(name="food_collection")</code></pre>
+
+  <h2>Add documents</h2>
+  <pre><code>collection.add(
+    ids=["id1", "id2"],
+    documents=["Italian pasta", "Thai curry"],
+    metadatas=[{"source": "food1"}, {"source": "food2"}]
+)</code></pre>
+
+  <h2>Retrieve documents</h2>
+  <pre><code>results = collection.get()
+results = collection.get(ids=["id1"])
+results = collection.get(include=["embeddings"])</code></pre>
+
+  <h2>Update documents</h2>
+  <pre><code>collection.update(
+    ids=["id1"],
+    documents=["Updated pasta description"]
+)</code></pre>
+
+  <h2>Delete documents</h2>
+  <pre><code>collection.delete(ids=["id1"])
+collection.delete(where={"source": "food1"})</code></pre>
+
+  <h1>Distance functions in ChromaDB</h1>
+  <p>ChromaDB uses a vector index with a configurable distance metric.</p>
+
+  <ul>
+    <li><strong>l2</strong> - squared L2 distance</li>
+    <li><strong>cosine</strong> - cosine distance</li>
+    <li><strong>ip</strong> - inner product distance</li>
+  </ul>
+
+  <pre><code>collection = client.create_collection(
+    name="my_collection",
+    metadata={"hnsw:space": "cosine"}
+)</code></pre>
+
+  <h2>Important note</h2>
+  <p>Some collection settings, such as the embedding model or distance metric, cannot be changed after creation. In those cases, it is often easier to create a new collection.</p>
+
+  <h1>What vector databases do not handle</h1>
+  <ul>
+    <li>Chunking text</li>
+    <li>Extra retrieval logic such as re-ranking</li>
+    <li>Prompt augmentation</li>
+    <li>Direct LLM integration</li>
+  </ul>
+
+  <h1>RAG frameworks</h1>
+  <p>Frameworks like LangChain and LlamaIndex help connect vector databases, document processing, and model orchestration into a single system.</p>
+
+  <h2>Key takeaways</h2>
+  <ul>
+    <li>Vector databases are essential for modern RAG systems.</li>
+    <li>They improve semantic retrieval and reduce implementation complexity.</li>
+    <li>Good document preparation and testing are critical for quality results.</li>
+  </ul>
+</body>
+</html>

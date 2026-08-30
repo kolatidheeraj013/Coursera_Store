@@ -1,11 +1,15 @@
-reqired packages:
+Required packages:
 pip install numpy==2.3.1
 pip install scipy==1.16.0
 pip install chromadb==1.0.12
 pip install sentence-transformers==4.1.0
 pip install ibm-watsonx-ai==1.3.24
 
+# Or install all at once:
+pip install numpy==2.3.1 scipy==1.16.0 chromadb==1.0.12 sentence-transformers==4.1.0 ibm-watsonx-ai==1.3.24
 
-#Download the comprehensive food dataset that will serve as the foundation for all three search systems:
-
+# Download the comprehensive food dataset for the project:
 wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/sN1PIR8qp1SJ6K7syv72qQ/FoodDataSet.json
+
+# For Windows PowerShell use:
+# Invoke-WebRequest -Uri "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/sN1PIR8qp1SJ6K7syv72qQ/FoodDataSet.json" -OutFile "FoodDataSet.json"
