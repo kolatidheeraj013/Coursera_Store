@@ -13,3 +13,41 @@ wget https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/sN1PIR8q
 
 # For Windows PowerShell use:
 # Invoke-WebRequest -Uri "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/sN1PIR8qp1SJ6K7syv72qQ/FoodDataSet.json" -OutFile "FoodDataSet.json"
+
+
+code reading sequence:
+    1.info.txt
+    Understand required packages and dataset setup.
+
+    2.FoodDataSet.json
+    Learn the food record structure and available fields.
+
+    3.shared_function.py
+    This is the core logic:
+
+    Load JSON data
+    Create ChromaDB collection
+    Generate embeddings
+    Perform similarity searches
+    Apply cuisine and calorie filters
+    
+    4.shared_functions.py
+    This is only a compatibility wrapper for the singular filename above.
+
+    5.interactive_search.py
+    Basic interactive search and search history.
+
+    6.advanced_search.py
+    Menu-based search with cuisine, calorie, and combined filters.
+
+    7.system_comparison.py
+    Compares different search approaches and response times.
+
+    8.calorie_checker.py
+    A focused calorie-budget application.
+
+    9.result_limiter.py
+    Demonstrates how n_results changes search output.
+
+    10.enhanced_rag_chatbot.py
+    Read this last. It combines local similarity search with optional Watsonx responses.
