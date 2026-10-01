@@ -29,8 +29,10 @@ def create_watsonx_embedding() -> WatsonxEmbeddings:
 def create_watsonx_llm(
     temperature: float = config.TEMPERATURE,
     max_new_tokens: int = config.MAX_NEW_TOKENS,
-    decoding_method: str = "sample"
-) -> WatsonxLLM:
+    decoding_method: str = "sample")-> WatsonxLLM:
+    """sample and greedy=>These determine how the model chooses the next token.
+    1.greedy:Generally chooses the highest-probability token at each step.,2.sample:Samples from the probability distribution, allowing more variation."""
+
     """Creates an IBM Watsonx LLM for generating responses.
     
     Args:
