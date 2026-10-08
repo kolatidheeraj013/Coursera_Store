@@ -50,7 +50,29 @@ def get_transcript(url):
    
     return transcript if transcript else None
  
- 
+    """
+ #This is the output of the above function:
+ [
+    {
+        "text": "We're no strangers to love.",
+        "start": 0.0,
+        "duration": 3.5
+    },
+    {
+        "text": "You know the rules and so do I.",
+        "start": 3.5,
+        "duration": 4.0
+    },
+    {
+        "text": "A full commitment's what I'm thinking of.",
+        "start": 7.5,
+        "duration": 4.0
+    }
+]
+
+    """
+
+#This is where we will process the json to clear string
 def process(transcript):
     # Initialize an empty string to hold the formatted transcript
     txt = ""
@@ -79,7 +101,7 @@ def chunk_transcript(processed_transcript, chunk_size=200, chunk_overlap=20):
     chunks = text_splitter.split_text(processed_transcript)
     return chunks
  
- 
+
 def setup_credentials():
     # Define the model ID for the WatsonX model being used
     model_id = "ibm/granite-8b-code-instruct"
@@ -127,7 +149,7 @@ def setup_embedding_model(credentials, project_id):
     )
  
  
- 
+
 def create_faiss_index(chunks, embedding_model):
     """
     Create a FAISS index from text chunks using the specified embedding model.
@@ -138,8 +160,8 @@ def create_faiss_index(chunks, embedding_model):
     """
     # Use the FAISS library to create an index from the provided text chunks
     return FAISS.from_texts(chunks, embedding_model)
- 
- 
+
+
  
 def perform_similarity_search(faiss_index, query, k=3):
     """
@@ -165,7 +187,7 @@ def create_summary_prompt():
     template = """
     <|begin_of_text|><|start_header_id|>system<|end_header_id|>
     You are an AI assistant tasked with summarizing YouTube video transcripts. Provide concise, informative summaries that capture the main points of the video content.
- 
+
     Instructions:
     1. Summarize the transcript in a single concise paragraph.
     2. Ignore any timestamps in your summary.
